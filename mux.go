@@ -21,6 +21,10 @@ func (s *Server) debugHandler(next http.Handler) http.Handler {
 		})
 }
 
+func (s *Server) proxyHandler(next http.Handler) http.Handler {
+	return handlers.ProxyHeaders(next)
+}
+
 func (s *Server) logHandler(next http.Handler) http.Handler {
 	var accessLog io.Writer
 
@@ -104,6 +108,7 @@ func NewHandler(server *Server) (http.Handler, error) {
 	if server.Debug {
 		handler = server.debugHandler(handler)
 	}
+	handler = server.proxyHandler(handler)
 	if server.Log != "" {
 		handler = server.logHandler(handler)
 	}
